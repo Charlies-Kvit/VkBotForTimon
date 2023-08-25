@@ -88,6 +88,14 @@ async def to_give_post(vk, event):
                                        f"звание {data[1].lower()}")
 
 
+async def get_user_info(vk, event):
+    data = event['text'].split()
+    db_sess = db_session.create_session()
+    if len(data) == 1:
+        user = db_sess.query(User).filter(User.user_id == event['from_id']).first()
+        await vk.messages_send
+
+
 async def start_bot():
     session = vkreal.VkApi(token=token)
     vk = session.api_context()
@@ -100,6 +108,8 @@ async def start_bot():
             event = event['object']['message']
             if event['text'] in ['/start', 'Начать']:
                 loop.create_task(hello(vk, event))
+            if event['text'].startswith("!юзер"):
+                loop.create_task(get_user_info(vk, event))
             if event['text'].startswith("!связаться"):
                 loop.create_task(get_request(vk, event))
             if event['text'] == "!регистрация":
